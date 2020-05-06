@@ -10,7 +10,6 @@ def transpose(l1, l2):
     l2 =[[row[i] for row in l1] for i in range(len(l1[0]))] 
     return l2 
 
-print("Hello World")
 
 arr = []
 dr = 0.0004
