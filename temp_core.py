@@ -1,6 +1,22 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+def Cp(T):
+    if(T >= 900):
+        return 650.0
+    elif(T >= 735 and T < 900):
+        return 545 + (17820/(T - 731))
+    elif(T >= 600 and T < 735):
+        return 666 + (13002/(738 - T))
+    else:
+        return 425 + (0.0773*T) - (0.00169*T*T) + (0.00000222*T*T*T)
+    
+def K(T):
+    if(T > 800):
+        return 27.3
+    else
+        return 54 - (0.0333*T)
+
 def transpose(l1, l2): 
   
     # we have nested loops in comprehensions 
@@ -30,7 +46,7 @@ mcp = 0
 ccp = 0
 mk  = 0
 ck  = 0
-itr = int(1e9)
+itr = int(1e8)
 for i in range(itr):
 
 	vec = []
