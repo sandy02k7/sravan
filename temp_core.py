@@ -1,3 +1,4 @@
+import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -9,12 +10,12 @@ def Cp(T):
     elif(T >= 600 and T < 735):
         return 666 + (13002/(738 - T))
     else:
-        return 425 + (0.0773*T) - (0.00169*T*T) + (0.00000222*T*T*T)
+        return 425 + (0.773*T) - (0.00169*T*T) + (0.00000222*T*T*T)
     
 def K(T):
     if(T > 800):
         return 27.3
-    else
+    else:
         return 54 - (0.0333*T)
 
 def transpose(l1, l2): 
@@ -26,8 +27,8 @@ def transpose(l1, l2):
     l2 =[[row[i] for row in l1] for i in range(len(l1[0]))] 
     return l2 
 
-
 arr = []
+arr_t = []
 dr = 0.0004
 R = 0.0080
 n = int(R/dr)
@@ -42,100 +43,47 @@ x = (dr*dr*ro)/2.0
 y = (dr*dr)
 z = (R*dr)
 T_water_air = 25.0
-mcp = 0
-ccp = 0
-mk  = 0
-ck  = 0
+dt = 1e9
+
+for t in range(20, 1200):
+	dt0 = x*Cp(t)/(K(t))
+	dtR = dt0/2.0
+	dtr = 2*x*Cp(t)/((2*K(t)/y) - (K(t)/z) + (bR))
+	dt = min(dt, min(dt0, min(dtr, dtR)))
+
 itr = int(1e8)
 for i in range(itr):
 
 	vec = []
 
-	if(T[0] > 802):
-		mcp = 2.3
-		ccp = 493.71
-		mk  = 0.013
-		ck  = 9.84
-	elif(T[0] <= 802 and T[0] > 677):
-		mcp = 0
-		ccp = 1400
-		mk  = -0.047
-		ck  = 75.42
-	elif(T[0] <= 677):
-		mcp = 0.5066
-		ccp = 281.4
-		mk  = -0.047
-		ck  = 75.42
-	cp = ccp + (mcp*T[0])
-	k =  ck + (mk*T[0])
-	dt0 = x*cp/(k)
-	dtR = dt0/2.0
-	dtr = 2*x*cp/((2*k/y) - (k/z) + (bR))
-	dt = min(dt0, min(dtr, dtR))
+	cp0 = Cp(T[0])
+	k0 = K(T[0])
 	time_taken[0] = time_taken[0] + dt
-	a = k/y
-	c0 = (ro*cp/(dt)) - (4*k/y)
-	d = dt/(ro*cp)
+	a = k0/y
+	c0 = (ro*cp0/(dt)) - (4*k0/y)
+	d = dt/(ro*cp0)
 	Tf[0] = (4*a*T[1] + c0*T[0])*d
 	if(i%(itr/100) == 0):
 		vec.append(tuple((Tf[0], time_taken[0])))
 
 	for j in range(1, n-1):
-		if(T[j] > 802):
-			mcp = 2.3
-			ccp = 493.71
-			mk  = 0.013
-			ck  = 9.84
-		elif(T[j] <= 802 and T[j] > 677):
-			mcp = 0
-			ccp = 1400
-			mk  = -0.047
-			ck  = 75.42
-		elif(T[j] <= 677):
-			mcp = 0.5066
-			ccp = 281.4
-			mk  = -0.047
-			ck  = 75.42
-		cp = ccp + (mcp*T[j])
-		k =  ck + (mk*T[j])
-		dt0 =x*cp/(k)
-		dtR = dt0/2.0
-		dtr = 2*x*cp/((2*k/y) - (k/z) + (bR))
-		dt = min(dt0, min(dtr, dtR))
+		cpr = Cp(T[j])
+		kr = K(T[j])
 		time_taken[j] = time_taken[j] + dt
-		a = k/y
-		b = k/(2*z)
-		cr = ro*cp/(dt) - 2*k/(y)
-		d = (dt/(ro*cp))
+		a = kr/y
+		b = kr/(2*z)
+		cr = ro*cpr/(dt) - 2*kr/(y)
+		d = (dt/(ro*cpr))
 		Tf[j] = (a*(T[j-1] + T[j+1]) + b*(T[j-1] - T[j+1]) + cr*(T[j]))*d
 		if(i%(itr/100) == 0):
 			vec.append(tuple((Tf[j], time_taken[j])))
 
-	if(T[n-1] > 802):
-		mcp = 2.3
-		ccp = 493.71
-		mk  = 0.013
-		ck  = 9.84
-	elif(T[n-1] <= 802 and T[n-1] > 677):
-		mcp = 0
-		ccp = 1400
-		mk  = -0.047
-		ck  = 75.42
-	elif(T[n-1] <= 677):
-		mcp = 0.5066
-		ccp = 281.4
-		mk  = -0.047
-		ck  = 75.42
-	cp = ccp + (mcp*T[n-1])
-	k =  ck + (mk*T[n-1])
-	dt0 = x*cp/(k)
-	dtR = dt0/2.0
-	dtr = 2*x*cp/((2*k/y) - (k/z) + (bR))
-	dt = min(dt0, min(dtr, dtR))
+	cpR = Cp(T[n-1])
+	kR = K(T[n-1])
 	time_taken[n-1] = time_taken[n-1] + dt
-	aR = 2*k/(y) - k/(z)
-	cR = ro*cp/(dt) - (aR) - (bR)
-	d = dt/(ro*cp)
+	aR = 2*kR/(y) - kR/(z)
+	cR = ro*cpR/(dt) - (aR) - (bR)
+	d = dt/(ro*cpR)
 	Tf[n-1] = (aR*T[n-2] + bR*T_water_air + cR*T[n-1])*d
 	if(i%(itr/100) == 0):
 		vec.append(tuple((Tf[n-1], time_taken[n-1])))
@@ -144,14 +92,15 @@ for i in range(itr):
 
 	if(i%(itr/100) == 0):
 		arr.append(vec);
-		print(Tf[n-1], i/(itr/100), time_taken[n-1])
+		now = datetime.datetime.now()
+		print(Tf[n-1], i/(itr/100), time_taken[n-1], now.strftime("%Y-%m-%d %H:%M:%S"))
 
 filename = 'data.txt'
 with open(filename, 'w') as f:
-	arr_t = []
 	arr_t = transpose(arr, arr_t)
 	for ind in range(len(arr_t)):
 		print(arr_t[ind], file=f)  # Python 3.x
-#plt.plot(range(100), arr)
+
+#plt.plot(range(len(arr)), arr)
 #plt.ylabel('Temperature')
 #plt.show(block=True)
