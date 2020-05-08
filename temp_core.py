@@ -21,31 +21,54 @@ arr = []
 arr_t = []
 dr = 0.0004
 R = 0.0080
+Rc = 0.014 
+Qtot = 130
+v_bar = 6
+no = 7
+Qno = Qtot/no
+p = 2*3.14*((Rc + R)/2)
+A = 3.14*(Rc*Rc - R*R)
 n = int(R/dr)
 time_taken = np.ones(n)*0;
 T = np.ones(n)*1000
 Tf = np.ones(n)
+Dh = 4*A/p
+v_w = Qno/(3600*A)
+v_rel = abs(v_w - v_bar)
+ro_w = 996
+mu =   0.000993
+Re = (v_rel*ro_w*Dh)/mu
+kw = 0.597
+pr = 7.0 
+h = 0
+length_cl = 6.87
 
-ro = 7850.0
-h = 24417.98863
-bR = 2*h/(dr)
+if(Re < 5000):
+	h = (1.86*(Re*pr)**(0.33)*kw)/Dh
+else:
+	h = (0.023*pr**(0.3)*Re**(0.8))/Dh
+
+ro = 7850
+abR = 2*11/(dr)
+wbR = 2*h/(dr)
 x = (dr*dr*ro)/2.0
 y = (dr*dr)
 z = (R*dr)
 T_water_air = 25.0
+time_thr = length_cl/v_bar
 dt = 1e9
 
-for t in range(20, 1200):
+for t in range(225, 1000):
 	dt0 = x*Cp(t)/(K(t))
 	dtR = dt0/2.0
-	dtr = 2*x*Cp(t)/((2*K(t)/y) - (K(t)/z) + (bR))
+	dtr = 2*x*Cp(t)/((2*K(t)/y) - (K(t)/z) + (wbR))
 	dt = min(dt, min(dt0, min(dtr, dtR)))
 
-itr = int(1e8)
+itr = int(1e10)
 for i in range(itr):
 
 	vec = []
-
+	
 	cp0 = Cp(T[0])
 	k0 = K(T[0])
 	time_taken[0] = time_taken[0] + dt
@@ -68,6 +91,10 @@ for i in range(itr):
 		if(i%(itr/100) == 0):
 			vec.append(tuple((Tf[j], time_taken[j])))
 
+	if(time_taken[n-1] < time_thr):
+		bR = wbR
+	else:
+		bR = abR
 	cpR = Cp(T[n-1])
 	kR = K(T[n-1])
 	time_taken[n-1] = time_taken[n-1] + dt
