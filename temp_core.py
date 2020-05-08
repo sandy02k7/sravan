@@ -3,20 +3,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def Cp(T):
-    if(T >= 900):
-        return 650.0
-    elif(T >= 735 and T < 900):
-        return 545 + (17820/(T - 731))
-    elif(T >= 600 and T < 735):
-        return 666 + (13002/(738 - T))
-    else:
-        return 425 + (0.773*T) - (0.00169*T*T) + (0.00000222*T*T*T)
+        return 470 + (0.02*T) + (0.00038*T*T)
     
 def K(T):
-    if(T > 800):
-        return 27.3
-    else:
-        return 54 - (0.0333*T)
+        return 52.27 - (0.01541*T) - (0.00002155*T*T)
 
 def transpose(l1, l2): 
   
