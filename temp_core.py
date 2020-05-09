@@ -3,10 +3,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def Cp(T):
-        return 470 + (0.02*T) + (0.00038*T*T)
+        return 600
+#        return 470 + (0.02*T) + (0.00038*T*T)
     
 def K(T):
-        return 52.27 - (0.01541*T) - (0.00002155*T*T)
+    if(T <= 800):
+            return 54 - 0.0333*T
+    else:
+            return 27.3 
+#        return 52.27 - (0.01541*T) - (0.00002155*T*T)
 
 def transpose(l1, l2): 
   
@@ -64,7 +69,7 @@ for t in range(225, 1000):
 	dtr = 2*x*Cp(t)/((2*K(t)/y) - (K(t)/z) + (wbR))
 	dt = min(dt, min(dt0, min(dtr, dtR)))
 
-itr = int(1e10)
+itr = int(1e8)
 for i in range(itr):
 
 	vec = []
