@@ -10,13 +10,14 @@ double min(double x, double y){
 
 int main()
 {
-
+	FILE *fptr;
+        fptr = fopen("data(Q = 110).csv", "w"); 
 	const double Cp = 600,
 			 K  = 45,
 			 dr = 0.0004,
 		     R  = 0.008,
 		     Rc = 0.0235,
-		   Qtot = 110.0,
+		   Qtot = 105.0,
 	      v_bar = 6.0,
 		  no    = 1;
 	double Qno   = Qtot/no;
@@ -38,7 +39,7 @@ int main()
 	double kw = 0.597;
 	double pr = 7.0;
 	double h = 0.0;
-	double length_cl = 9.0;
+	double length_cl = 9.828;
 	printf("%.10f\n",Re);
 //	printf("Enter the value of the flow rate and  mill speed:");
 //	scanf("%lf %lf",&Qno, &v_bar);
@@ -81,12 +82,13 @@ int main()
 	double bR = wbR;
     double aR = 2*K/(y) - K/(z);
 	double cR = 0;
+	int is_thr = 1;
 	for(long i = 0; i < itr; i++)
 	{
 	//------------T[0]-------------------------------------------
 		Tf[0] = (4*a*T[1] + c0*T[0])*d;
 		if(i%(itr/samples) == 0) vec[0] = Tf[0];
-
+		
 	//------------T[j]-------------------------------------------
 		for(int j = 1; j < n; j++)
 		{
@@ -103,6 +105,15 @@ int main()
 		for(int j = 0; j < n; j++) T[j] = Tf[j];
 		time_taken += dt;
 
+		if(time_taken > time_thr && is_thr)
+		{ 
+			is_thr = 0;
+			for(int j =0; j < n; j++)
+			{
+				fprintf(fptr, "%.13f,\n", Tf[j]);
+			}
+		}
+
 		if(i%(itr/samples) == 0){
 			for(int j = 0; j < n; j++) arr[i/(itr/samples)][j] = vec[j];
 			for(int j = 0; j < n; j++) time_taken_arr[i/(itr/samples)] = time_taken;
@@ -110,8 +121,6 @@ int main()
 		}
 	}
 
-	FILE *fptr;
-	fptr = fopen("data.csv", "w");
 	for(int i = 0; i < samples; i++){
 		for(int j = 0; j < n; j++){
 			fprintf(fptr, "%.13f,", arr[i][j]);
