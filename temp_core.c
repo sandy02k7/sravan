@@ -11,14 +11,14 @@ double min(double x, double y){
 int main()
 {
 	FILE *fptr;
-        fptr = fopen("data(Q = 110).csv", "w"); 
+        fptr = fopen("20mm_data(Q = 100).csv", "w"); 
 	const double Cp = 600,
 			 K  = 45,
 			 dr = 0.0004,
-		     R  = 0.008,
+		     R  = 0.010,
 		     Rc = 0.0235,
-		   Qtot = 105.0,
-	      v_bar = 6.0,
+		   Qtot = 100.0,
+	      v_bar = 3.6,
 		  no    = 1;
 	double Qno   = Qtot/no;
 	double p     = 2*3.14*((Rc + R)/2);
@@ -55,7 +55,7 @@ int main()
 	double z = (R*dr);
 	double T_water_air = 25.0;
 	double time_thr = length_cl/v_bar;
-	double dt = 1e9;
+	double dt = 9e9;
 	printf("%.10f\n",h);
 	for(int i = 20; i <= 1200; i++)
 	{
