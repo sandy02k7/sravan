@@ -11,13 +11,13 @@ double min(double x, double y){
 int main()
 {
 	FILE *fptr;
-        fptr = fopen("20mm_data(Q = 100).csv", "w"); 
+        fptr = fopen("20mm_data(Q = 90).csv", "w"); 
 	const double Cp = 600,
 			 K  = 45,
 			 dr = 0.0004,
 		     R  = 0.010,
 		     Rc = 0.0235,
-		   Qtot = 100.0,
+		   Qtot = 90.0,
 	      v_bar = 3.6,
 		  no    = 1;
 	double Qno   = Qtot/no;
@@ -25,6 +25,7 @@ int main()
 	double A	 = 3.14*((Rc*Rc) - (R*R));
 	int    n     = (int)(R/dr);
 	double time_taken = 0;
+	double tot_time = 10;
 	double T[n];
 	for(int i = 0 ;i < n; i++) T[i] = 1000.0;
 	double Tf[n];
@@ -65,7 +66,8 @@ int main()
 		dt = min(dt, min(dt0, min(dtr, dtR)));
 	}
 
-	long itr = (long)(5e9);
+	long itr = (long)(tot_time/dt);
+	printf("%ld\n",itr);
 	int samples = 100;
 	double arr[samples][n];
 	double time_taken_arr[samples];
