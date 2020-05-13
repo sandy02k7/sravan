@@ -6,14 +6,24 @@
 double min(double x, double y){
 	return ((x < y) ? x : y);
 }
-
-
+double K(double T){
+	double C = 0.18;
+	double Mn = 0.49;
+	double Ni = 0.19;
+	double Cu = 0.23;
+	double Cr = 0.22;
+	double Mo = 0.066;
+	double Ar3 = 910 - 273*C - 74*Mn - 56*Ni - 16*Cr - 9*Mo - 5*Cu;  
+	if	(T > Ar3) return 20.45 - 4.125*C + 0.0089*T;
+	else if (T < 769) return 41.971 + 0.018183*T;
+	else		  return 55.95 + 0.00248*(T - 769);
+}
 int main()
 {
 	FILE *fptr;
         fptr = fopen("20mm_data(Q = 90).csv", "w"); 
 	const double Cp = 600,
-			 K  = 45,
+			 k  = 45,
 			 dr = 0.0004,
 		     R  = 0.010,
 		     Rc = 0.0235,
@@ -60,9 +70,9 @@ int main()
 	printf("%.10f\n",h);
 	for(int i = 20; i <= 1200; i++)
 	{
-		double dt0 = x*Cp/(K);
+		double dt0 = x*Cp/(K(i));
 		double dtR = dt0/2.0;
-		double dtr = 2*x*Cp/((2*K/y) - (K/z) + (wbR));
+		double dtr = 2*x*Cp/((2*K(i)/y) - (K(i)/z) + (wbR));
 		dt = min(dt, min(dt0, min(dtr, dtR)));
 	}
 
@@ -74,33 +84,42 @@ int main()
 
 
 	double vec[n];
-	double a = K/y;
-	double c0 = (ro*Cp/(dt)) - (4*K/y);
-	double d = dt/(ro*Cp);
+	double a = 45/y;
+	double e = ro*Cp;
+	double c0 = (e/(dt)) - (4*a);
+	double d = dt/e;
+	double f = (1/d);
 
-	double b = K/(2*z);
-	double cr = ro*Cp/(dt) - 2*K/(y);
+	double b = 45/(2*z);
+	double cr = e/(dt) - 2*45/(y);
 
 	double bR = wbR;
-    double aR = 2*K/(y) - K/(z);
+    	double aR = 2*45/(y) - 45/(z);
 	double cR = 0;
 	int is_thr = 1;
 	for(long i = 0; i < itr; i++)
 	{
 	//------------T[0]-------------------------------------------
+		a = K(T[0])/y;
+		c0 = (f)-(4*a);
 		Tf[0] = (4*a*T[1] + c0*T[0])*d;
 		if(i%(itr/samples) == 0) vec[0] = Tf[0];
 		
 	//------------T[j]-------------------------------------------
 		for(int j = 1; j < n; j++)
 		{
+			a = K(T[j])/y;
+			b = K(T[j])/(2*z);
+			cr = (f) - (2*(K(T[j])/y));
 			Tf[j] = (a*(T[j-1] + T[j+1]) + b*(T[j-1] - T[j+1]) + cr*(T[j]))*d;
 			if(i%(itr/samples) == 0) vec[j] = Tf[j];
 		}
 
 	//------------T[n-1]-------------------------------------------
+		
 		if(time_taken > time_thr) bR = abR;
-		cR = ro*Cp/(dt) - (aR) - (bR);
+		aR = 2*(K(T[n-1])/y) - K(T[n-1])/z;
+		cR = (f) - (aR) - (bR);
 		Tf[n-1] = (aR*T[n-2] + bR*T_water_air + cR*T[n-1])*d;
 		if(i%(itr/samples) == 0) vec[n-1] = Tf[n-1];
 
