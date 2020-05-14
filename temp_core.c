@@ -21,21 +21,21 @@ double min(double x, double y){
 int main()
 {
 	FILE *fptr;
-        fptr = fopen("20mm_data(Q = 120).csv", "w"); 
+        fptr = fopen("20mm_data_l=9.csv", "w"); 
 	const double Cp = 600,
 			 k  = 45,
 			 dr = 0.0004,
 		     R  = 0.010,
 		     Rc = 0.0235,
-		   Qtot = 120.0,
-	      v_bar = 3.6,
+		   Qtot = 100.0,
+	      v_bar = 3.9,
 		  no    = 1;
 	double Qno   = Qtot/no;
 	double p     = 2*3.14*((Rc + R)/2);
 	double A	 = 3.14*((Rc*Rc) - (R*R));
 	int    n     = (int)(R/dr);
 	double time_taken = 0;
-	double tot_time = 10;
+	double tot_time = 6;
 	double T[n];
 	for(int i = 0 ;i < n; i++) T[i] = 1000.0;
 	double Tf[n];
@@ -50,7 +50,7 @@ int main()
 	double kw = 0.597;
 	double pr = 7.0;
 	double h = 0.0;
-	double length_cl = 9.828;
+	double length_cl = 9;
 	printf("%.10f\n",Re);
 //	printf("Enter the value of the flow rate and  mill speed:");
 //	scanf("%lf %lf",&Qno, &v_bar);
@@ -59,7 +59,7 @@ int main()
 	else          h = (0.023*pow(pr,(0.3))*pow(Re,(0.8)))/Dh;
 
 	double ro = 7850;
-	double abR = 2*11/(dr);
+	double abR = 2*1000/(dr);
 	double wbR = 2*h/(dr);
 	double x = (dr*dr*ro)/2.0;
 	double y = (dr*dr);
